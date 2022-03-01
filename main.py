@@ -1,4 +1,9 @@
 ####################################################
+# Imports
+####################################################
+from math import sqrt
+
+####################################################
 # Exceptions and Errors
 ####################################################
 class ThisLTHCLangException:
@@ -627,3 +632,65 @@ class ThisLTHCLangListVarType(ThisLTHCLangVarType):
                     return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
         else:
             return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
+
+class Vector2:
+    def __init__(self, x: PYNUMTYPES, y: PYNUMTYPES):
+        self.x = x
+        self.y = y
+    
+    @property
+    def length(self) -> PYNUMTYPES:
+        return sqrt(self.x**2 + self.y**2)
+    
+    def normalize(self):
+        return Vector2(self.x / self.length, self.y / self.length)
+    
+    @property
+    def normalized(self):
+        return self.normalize()
+    
+    def __add__(self, other):
+        if isinstance(other, Vector2):
+            copy = Vector2(self.x, self.y)
+            copy.x += other.x
+            copy.y += other.y
+            return copy
+        else:
+            return ThisLTHCLangError("[Vector Error", "a vector2 can be only added with an other vector2]")
+    
+    def __sub__(self, other):
+        if isinstance(other, Vector2):
+            copy = Vector2(self.x, self.y)
+            copy.x -= other.x
+            copy.y -= other.y
+            return copy
+        else:
+            return ThisLTHCLangError("[Vector Error", "a vector2 can be only substracted with an other vector2]")
+
+    def __mul__(self, other):
+        if isinstance(other, Vector2):
+            copy = Vector2(self.x, self.y)
+            copy.x *= other.x
+            copy.y *= other.y
+            return copy
+        elif isinstance(other, PYNUMTYPES):
+            copy = Vector2(self.x, self.y)
+            copy.x *= other
+            copy.y *= other
+            return copy
+        else:
+            return ThisLTHCLangError("[Vector Error", "a vector2 can be only multuplied with an other vector2 or a number]")
+    
+    def __truediv__(self, other):
+        if isinstance(other, Vector2):
+            copy = Vector2(self.x, self.y)
+            copy.x /= other.x
+            copy.y /= other.y
+            return copy
+        elif isinstance(other, PYNUMTYPES):
+            copy = Vector2(self.x, self.y)
+            copy.x /= other
+            copy.y /= other
+            return copy
+        else:
+            return ThisLTHCLangError("[Vector Error", "a vector2 can be only divided with an other vector2 or a number]")
