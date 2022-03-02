@@ -1,7 +1,7 @@
 ####################################################
 # Imports
 ####################################################
-from math import sqrt
+from math import sqrt, asin, acos
 
 ####################################################
 # Exceptions and Errors
@@ -633,6 +633,11 @@ class ThisLTHCLangListVarType(ThisLTHCLangVarType):
         else:
             return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
 
+def sign_of(num: PYNUMTYPES) -> int:
+    if num < 0:
+        return -1
+    return 1
+
 class Vector2:
     def __init__(self, x: PYNUMTYPES, y: PYNUMTYPES):
         self.x = x
@@ -694,3 +699,112 @@ class Vector2:
             return copy
         else:
             return ThisLTHCLangError("[Vector Error", "a vector2 can be only divided with an other vector2 or a number]")
+
+    @property
+    def angle(self):
+        cos_ = self.x / self.length
+        sin_ = self.y / self.length
+        angle_cos = acos(cos_)
+        angle_sin = asin(sin_)
+        angle = 0
+        if sign_of(cos_) == sign_of(sin_):
+            angle = angle_cos
+            if sign_of(cos_) == -1:
+                angle *= -1
+        else:
+            if sign_of(cos_) < sign_of(sin_):
+                angle = angle_cos
+            else:
+                angle = angle_sin
+        return angle
+    
+    def __str__(self) -> str:
+        return f'{self.x}, {self.y}'
+
+class ThisLTHCLangVector2VarType(ThisLTHCLangVarType):
+    def __init__(self, name: str, value: Vector2):
+        super().__init__(name, value)
+    
+    def copy(self):
+        return ThisLTHCLangVector2VarType(self.name+'->copy',self.value)
+    
+    def __str__(self) -> str:
+        return str(self.value)
+    
+    def add(self, other):
+        if isinstance(other, ThisLTHCLangVector2VarType):
+            try:
+                copy = self.copy()
+                copy.value = copy.value + other.value
+                return copy
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        else:
+            return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
+    
+    def sub(self, other):
+        if isinstance(other, ThisLTHCLangVector2VarType):
+            try:
+                copy = self.copy()
+                copy.value = copy.value - other.value
+                return copy
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        else:
+            return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
+    
+    def mult(self, other):
+        if isinstance(other, ThisLTHCLangVector2VarType):
+            try:
+                copy = self.copy()
+                copy.value = copy.value * other.value
+                return copy
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        elif isinstance(other, ThisLTHCLangNumVarType):
+            try:
+                copy = self.copy()
+                copy.value = copy.value * other.value
+                return copy
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        else:
+            return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
+    
+    def div(self, other):
+        if isinstance(other, ThisLTHCLangVector2VarType):
+            try:
+                copy = self.copy()
+                copy.value = copy.value / other.value
+                return copy
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        elif isinstance(other, ThisLTHCLangNumVarType):
+            try:
+                copy = self.copy()
+                copy.value = copy.value / other.value
+                return copy
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        else:
+            return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
+
+    def eq(self, other):
+        if isinstance(other, ThisLTHCLangNumVarType):
+            try:
+                copy = self.copy()
+                return ThisLTHCLangBoolVarType(copy.name + ">> bool-out", copy.value.x == other.value.x and copy.value.y == other.value.y)
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        else:
+            return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
+    
+    def ne(self, other):
+        if isinstance(other, ThisLTHCLangNumVarType):
+            try:
+                copy = self.copy()
+                return ThisLTHCLangBoolVarType(copy.name + ">> bool-out", not(copy.value.x == other.value.x and copy.value.y == other.value.y))
+            except:
+                return ThisLTHCLangError("Runtime Error", 'An undefined error occured')
+        else:
+            return ThisLTHCLangIllegalException(f'Cannot execute specified op between {type(self)} and {type(other)}')
